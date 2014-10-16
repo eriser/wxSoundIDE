@@ -197,7 +197,7 @@ void wxSoundIDEFrame::OnVolSlider1CmdSliderUpdated(wxScrollEvent& event)
     wxString newlabel;
     newlabel << "Volume: " << VolSlider1->GetValue();
     VolLabel1->SetLabelText(newlabel);
-    setVolume(VolSlider1->GetValue());
+    setOSC(&osc1,osc1.on,osc1.wave,PitchSlider1->GetValue(),VolSlider1->GetValue());
 }
 
 void wxSoundIDEFrame::OnPitchSlider1CmdSliderUpdated(wxScrollEvent& event)
@@ -205,7 +205,8 @@ void wxSoundIDEFrame::OnPitchSlider1CmdSliderUpdated(wxScrollEvent& event)
     wxString newlabel;
     newlabel << "Pitch: " << PitchSlider1->GetValue();
     PitchLabel1->SetLabelText(newlabel);
-    setPitch(PitchSlider1->GetValue());
+    //setPitch(PitchSlider1->GetValue());
+    setOSC(&osc1,osc1.on,osc1.wave,PitchSlider1->GetValue(),VolSlider1->GetValue());
 }
 
 void wxSoundIDEFrame::OnOsc1Click(wxCommandEvent& event)

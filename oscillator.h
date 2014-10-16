@@ -81,21 +81,20 @@ struct OSC {
   byte on;
   byte wave;
   int pitch;
-  int endpitch;
-  int count;
-  // incrementer for saw and triangle waveforms
-  int inccount;
+  unsigned int count;
+  unsigned int inccount;
   int8_t increment;
-  int inccycle;
-  // period for waveform & counter for pitch bend
+  unsigned int inccycle;
   unsigned int halfcycle;
-  int halfcycleinc;
-  int halfcycleinccycle;
-  int halfcyclestart;
-  int halfcycleend;
 
-  byte vol;
-  byte output;
+  unsigned int wslope;
+  unsigned int wcycle;
+  /** ADSR related properties **/
+
+
+
+  unsigned int vol;
+  unsigned int output; // output is stored as  16 bit value and shifted before its put in OCR2B
 };
 
 #endif
