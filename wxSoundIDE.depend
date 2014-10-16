@@ -1451,7 +1451,7 @@
 	<stdlib.h>
 	"oscillator.h"
 
-1413495639 source:c:\dev\myprojects\wxprojects\wxsoundide\wxsoundidemain.cpp
+1413502260 source:c:\dev\myprojects\wxprojects\wxsoundide\wxsoundidemain.cpp
 	"wxSoundIDEMain.h"
 	<wx/msgdlg.h>
 	"led.h"
@@ -1511,14 +1511,14 @@
 
 1412497150 c:\wxwidgets-3.0.2\include\wx\msw\msgdlg.h
 
-1413499554 source:c:\dev\myprojects\wxprojects\wxsoundide\synth.cpp
+1413502096 source:c:\dev\myprojects\wxprojects\wxsoundide\synth.cpp
 	"Synth.h"
 	"oscillator.h"
 	<math.h>
 	"portaudio.h"
 	"fastdiv.h"
 
-1413496642 c:\dev\myprojects\wxprojects\wxsoundide\oscillator.h
+1413501092 c:\dev\myprojects\wxprojects\wxsoundide\oscillator.h
 
 1346458213 c:\dev\portaudio\include\portaudio.h
 

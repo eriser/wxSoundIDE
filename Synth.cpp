@@ -20,6 +20,7 @@ PaStream *paStream;
 PaError paErr;
 uint8_t fakeOCR2B, fakeCount=0;
 uint16_t skipstep = 0;
+boolean PWMemulation = false;
 
 
 int pitch = 440, pitch2 = 100;
@@ -81,6 +82,8 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
 
     /** create sound buffer by using the ISR **/
 
+    osc1.count = osc2.count = 0;
+
     for (j=0;j<framesPerBuffer;j+=PWMLEVELS) {
             fakeISR(); /** create next sample **/
 
@@ -90,15 +93,17 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
             // if OCR2B is 127, skipstep is 8, and 50% output is 255
             // if OCR2B is 64, skipstep is 4, and 75% output is 255
 
-            for (i=0; i< PWMLEVELS; i++) {
-                if (i >= skipstep) {
-
+            if (PWMemulation) {
+                for (i=0; i< PWMLEVELS; i++) {
+                    if (i >= skipstep) {
                         *out++ = 0;
-                }
-                else {
+                    }
+                    else {
                         *out++ = 255;
-
+                    }
                 }
+            } else {
+                for (i=0; i< PWMLEVELS; i++) *out++ = fakeOCR2B;
             }
     }
 
@@ -176,31 +181,19 @@ void sqwave(OSC* o){
 }
 
 void sawwave(OSC* o){
- /*
- if (o->count > o->halfcycle) {
-   o->count=0;
-   o->output=0;
- }
- if (o->inccount > o->inccycle) {
-   o->inccount=0;
-   o->output++;
- }*/
-
  o->output += o->wslope; // add 16 bit slope
  if (o->output > o->vol) o->output = 0;
 }
 
 void triwave(OSC* o){
- if (o->inccount > o->inccycle) {
-     o->inccount=0;
-     o->output += o->increment;
-   }
 
- if (o->count > o->halfcycle) {
-   o->increment = ~(o->increment);
-   o->count=0;
-   o->output=0;
+ if (o->count > o->wcycle) {
+   o->wslope = ~(o->wslope); // change sign
+   o->count = 0; // restart counting
  }
+
+o->output += o->wslope; // add 16 bit slope
+
 }
 
 void noise(OSC* o){
@@ -260,14 +253,10 @@ void setOSC(OSC* o,byte on, byte wave,int pitch,byte volume){
   //o->halfcycle = (57000/2)/pitch; // or 56819
   switch (wave) {
     case WSAW:
-    //o->inccycle = o->halfcycle/(volume/2); // number of counts per increment
-    o->inccycle = fastdiv(o->halfcycle,(volume>>1)); // number of counts per increment
     o->wslope = fastdiv(o->vol, o->wcycle); // rate of increase for wave as 16 bit value
     break;
     case WTRI:
-    //o->inccycle = o->halfcycle / volume ; // number of counts per increment
-    o->inccycle = fastdiv(o->halfcycle,volume) ; // number of counts per increment
-    o->increment = 1;
+    o->wslope = fastdiv(o->vol, o->wcycle); // rate of increase for wave as 16 bit value
     break;
   }
 
@@ -284,7 +273,7 @@ void setVolume(int vol) {
 
 void testOsc(){
 
-  setOSC(&osc1,true,WSAW,38,255);
+  setOSC(&osc1,true,WTRI,100,255);
   //setOSC(&osc2,true,WSAW,100,255);
 
 }

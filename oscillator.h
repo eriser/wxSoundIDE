@@ -87,14 +87,14 @@ struct OSC {
   unsigned int inccycle;
   unsigned int halfcycle;
 
-  unsigned int wslope;
-  unsigned int wcycle;
+  int16_t wslope;
+  uint16_t wcycle;
   /** ADSR related properties **/
 
 
 
-  unsigned int vol;
-  unsigned int output; // output is stored as  16 bit value and shifted before its put in OCR2B
+  uint16_t vol;
+  uint16_t output; // output is stored as  16 bit value and shifted before its put in OCR2B
 };
 
 #endif

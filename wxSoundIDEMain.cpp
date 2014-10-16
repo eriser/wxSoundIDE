@@ -103,9 +103,9 @@ wxSoundIDEFrame::wxSoundIDEFrame(wxWindow* parent,wxWindowID id)
     A0->SetMinSize(wxSize(20,20));
     A0->SetMaxSize(wxSize(0,0));
     Osc1DC = new wxClientDC(Panel1);
-    VolSlider1 = new wxSlider(this, ID_SLIDER1, 127, 0, 255, wxPoint(144,48), wxSize(144,24), wxSL_BOTH, wxDefaultValidator, _T("ID_SLIDER1"));
+    VolSlider1 = new wxSlider(this, ID_SLIDER1, 255, 0, 255, wxPoint(144,48), wxSize(144,24), wxSL_BOTH, wxDefaultValidator, _T("ID_SLIDER1"));
     VolSlider1->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
-    VolLabel1 = new wxStaticText(this, ID_STATICTEXT3, _("Volume: 127"), wxPoint(144,24), wxSize(128,13), wxALIGN_LEFT, _T("ID_STATICTEXT3"));
+    VolLabel1 = new wxStaticText(this, ID_STATICTEXT3, _("Volume: 255"), wxPoint(144,24), wxSize(128,13), wxALIGN_LEFT, _T("ID_STATICTEXT3"));
     PitchLabel1 = new wxStaticText(this, ID_STATICTEXT4, _("Pitch: 100"), wxPoint(304,24), wxSize(240,13), wxALIGN_LEFT, _T("ID_STATICTEXT4"));
     PitchSlider1 = new wxSlider(this, ID_SLIDER2, 100, 1, 1000, wxPoint(296,48), wxSize(488,24), wxSL_BOTH, wxDefaultValidator, _T("ID_SLIDER2"));
     wxString __wxRadioBoxChoices_1[6] =
@@ -189,7 +189,7 @@ void wxSoundIDEFrame::OnAbout(wxCommandEvent& event)
 
 void wxSoundIDEFrame::OnRadioBox1Select(wxCommandEvent& event)
 {
-    setWave(RadioBox1->GetSelection());
+    setOSC(&osc1,osc1.on,RadioBox1->GetSelection(),PitchSlider1->GetValue(),VolSlider1->GetValue());
 }
 
 void wxSoundIDEFrame::OnVolSlider1CmdSliderUpdated(wxScrollEvent& event)

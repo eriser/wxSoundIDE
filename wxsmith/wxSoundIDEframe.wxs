@@ -44,7 +44,7 @@
 			</object>
 		</object>
 		<object class="wxSlider" name="ID_SLIDER1" variable="VolSlider1" member="yes">
-			<value>127</value>
+			<value>255</value>
 			<max>255</max>
 			<pos>144,48</pos>
 			<size>144,24</size>
@@ -53,7 +53,7 @@
 			<handler function="OnVolSlider1CmdSliderUpdated" entry="EVT_COMMAND_SLIDER_UPDATED" />
 		</object>
 		<object class="wxStaticText" name="ID_STATICTEXT3" variable="VolLabel1" member="yes">
-			<label>Volume: 127</label>
+			<label>Volume: 255</label>
 			<pos>144,24</pos>
 			<size>128,13</size>
 			<style>wxALIGN_LEFT</style>
