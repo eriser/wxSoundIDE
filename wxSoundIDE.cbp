@@ -46,6 +46,8 @@
 		</Linker>
 		<Unit filename="Synth.cpp" />
 		<Unit filename="Synth.h" />
+		<Unit filename="fastdiv.cpp" />
+		<Unit filename="fastdiv.h" />
 		<Unit filename="led.cpp" />
 		<Unit filename="resource.rc">
 			<Option compilerVar="WINDRES" />

@@ -4,10 +4,12 @@
 #include <math.h>
 #include "portaudio.h"
 #include "fastdiv.h"
+#include <iostream>
+#include <fstream>
 
 #define NUM_SECONDS   (5)
 #define SAMPLE_RATE   (384000)
-#define NUMFRAMES 38400 //100 ms before refresh
+#define NUMFRAMES 3840 //100 ms before refresh
 #define PWMLEVELS 32
 
 /** Sound Variables **/
@@ -20,7 +22,7 @@ PaStream *paStream;
 PaError paErr;
 uint8_t fakeOCR2B, fakeCount=0;
 uint16_t skipstep = 0;
-boolean PWMemulation = false;
+boolean PWMemulation = true;
 
 
 int pitch = 440, pitch2 = 100;
@@ -82,7 +84,7 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
 
     /** create sound buffer by using the ISR **/
 
-    osc1.count = osc2.count = 0;
+    //osc1.count = osc2.count = 0;
 
     for (j=0;j<framesPerBuffer;j+=PWMLEVELS) {
             fakeISR(); /** create next sample **/
@@ -103,8 +105,10 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
                     }
                 }
             } else {
-                for (i=0; i< PWMLEVELS; i++) *out++ = fakeOCR2B;
+                for (i=0; i< PWMLEVELS; i++) { *out++ = fakeOCR2B; }
+
             }
+
     }
 
     return paContinue; /** THIS IS VERY IMPORTANT !!!! **/
@@ -187,12 +191,15 @@ void sawwave(OSC* o){
 
 void triwave(OSC* o){
 
- if (o->count > o->wcycle) {
-   o->wslope = ~(o->wslope); // change sign
-   o->count = 0; // restart counting
- }
+if (o->increment) {
+    if (o->output < o->vol - o->wslope) o->output += o->wslope;
+    else o->increment = 0;
+} else {
+    if (o->output > o->wslope) o->output -= o->wslope;
+    else o->increment = 1;
+}
 
-o->output += o->wslope; // add 16 bit slope
+//if (o->count > o->wcycle) { o->wslope = ~o->wslope; o->count = 0;}
 
 }
 
@@ -254,9 +261,11 @@ void setOSC(OSC* o,byte on, byte wave,int pitch,byte volume){
   switch (wave) {
     case WSAW:
     o->wslope = fastdiv(o->vol, o->wcycle); // rate of increase for wave as 16 bit value
+    o->increment = 1;
+    //o->wslope -= 5; //fast way to prevent overflow
     break;
     case WTRI:
-    o->wslope = fastdiv(o->vol, o->wcycle); // rate of increase for wave as 16 bit value
+    o->wslope = fastdiv(o->vol, (o->wcycle)); // rate of increase for wave as 16 bit value
     break;
   }
 
@@ -273,7 +282,40 @@ void setVolume(int vol) {
 
 void testOsc(){
 
-  setOSC(&osc1,true,WTRI,100,255);
-  //setOSC(&osc2,true,WSAW,100,255);
+  std::ofstream myfile;
+  setOSC(&osc1,true,WTRI,100,127);
+uint16_t i, j;
+    myfile.open ("output.txt");
+
+    /** create sound buffer by using the ISR **/
+
+    //osc1.count = osc2.count = 0;
+
+    for (j=0;j<NUMFRAMES;j+=PWMLEVELS) {
+            fakeISR(); /** create next sample **/
+
+            /** Now create duty cycle **/
+            skipstep = (fakeOCR2B+1) / PWMLEVELS;
+            // if OCR2B is 255, skipstep is 16, and all output is 255
+            // if OCR2B is 127, skipstep is 8, and 50% output is 255
+            // if OCR2B is 64, skipstep is 4, and 75% output is 255
+
+            if (PWMemulation) {
+                for (i=0; i< PWMLEVELS; i++) {
+                    if (i >= skipstep) {
+                        //*out++ = 0;
+                    }
+                    else {
+                        //*out++ = 255;
+                    }
+                }
+            } else {
+                for (i=0; i< PWMLEVELS; i++) { myfile << int(fakeOCR2B) << ","; }
+
+            }
+            myfile << std::endl;
+    }
+    myfile.close();
+  setOSC(&osc2,true,WSAW,100,240);
 
 }

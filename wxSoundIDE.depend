@@ -1511,14 +1511,16 @@
 
 1412497150 c:\wxwidgets-3.0.2\include\wx\msw\msgdlg.h
 
-1413502096 source:c:\dev\myprojects\wxprojects\wxsoundide\synth.cpp
+1413526590 source:c:\dev\myprojects\wxprojects\wxsoundide\synth.cpp
 	"Synth.h"
 	"oscillator.h"
 	<math.h>
 	"portaudio.h"
 	"fastdiv.h"
+	<iostream>
+	<fstream>
 
-1413501092 c:\dev\myprojects\wxprojects\wxsoundide\oscillator.h
+1413504003 c:\dev\myprojects\wxprojects\wxsoundide\oscillator.h
 
 1346458213 c:\dev\portaudio\include\portaudio.h
 

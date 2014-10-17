@@ -89,6 +89,7 @@ struct OSC {
 
   int16_t wslope;
   uint16_t wcycle;
+
   /** ADSR related properties **/
 
 
