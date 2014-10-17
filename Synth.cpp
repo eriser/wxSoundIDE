@@ -7,11 +7,6 @@
 #include <iostream>
 #include <fstream>
 
-#define NUM_SECONDS   (5)
-#define SAMPLE_RATE   (384000)
-#define NUMFRAMES 3840 //100 ms before refresh
-#define PWMLEVELS 32
-
 /** Sound Variables **/
 
 uint8_t data[NUMFRAMES]; //portaudio
@@ -23,6 +18,7 @@ PaError paErr;
 uint8_t fakeOCR2B, fakeCount=0;
 uint16_t skipstep = 0;
 boolean PWMemulation = true;
+uint8_t isLoop = true;
 
 
 int pitch = 440, pitch2 = 100;
@@ -34,11 +30,12 @@ int osc2inc = 10;
 int pitchbend = 16;
 
 OSC osc1,osc2;
+Instrument patch;
 ADSR adsr;
 OSC* oscptr;
 boolean osc12Lock = false;
 char tick=0;
-char oscmode = COMBINE;
+
 
 typedef void (*waveFunction)(OSC*);
 
@@ -84,10 +81,12 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
 
     /** create sound buffer by using the ISR **/
 
+
     //osc1.count = osc2.count = 0;
 
     for (j=0;j<framesPerBuffer;j+=PWMLEVELS) {
-            fakeISR(); /** create next sample **/
+            if (patch.playing) fakeISR(); /** create next sample **/
+            else return paAbort;
 
             /** Now create duty cycle **/
             skipstep = (fakeOCR2B+1) / PWMLEVELS;
@@ -115,35 +114,14 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
 }
 
 void stopSound() {
-    paErr = Pa_StopStream( paStream );
-    paErr = Pa_CloseStream( paStream );
-    Pa_Terminate();
+    patch.playing = false;
+    patch.count=0;
+    //paErr = Pa_StopStream( paStream );
+    //paErr = Pa_CloseStream( paStream );
 }
 
-void setPitch(int pitch){
-  // first we need to test if pitch is already set
-  // if not, create buffer and reload oscillators
-  long temp;
-  if (pitch == osc1.pitch) return; //no need to change sound
-
-  // otherwise recalculate
-
-  pitch++; // avoid division by zero
-  osc1.pitch = pitch;
-  //temp = (384000/2)/pitch; // or 56819
-  temp = (SAMPLE_RATE/PWMLEVELS/2)/pitch; // or 56819
-  osc1.halfcycle = (uint16_t) temp;
-
-  osc2.pitch = pitch/2;
-  temp = temp/2; // or 56819
-
-  osc2.halfcycle = (uint16_t) temp;
-  if (osc2.vol != 0) osc2.inccycle = osc2.halfcycle / osc2.vol ; // number of counts per increment
-  osc2.increment = 1;
-}
 
 void initSound() {
-    //setPitch(100);
 
     paErr = Pa_Initialize();
     if( paErr != paNoError ) goto error;
@@ -158,8 +136,24 @@ void initSound() {
                                 &data );
     if( paErr != paNoError ) goto error;
 
+    //paErr = Pa_StartStream( paStream );
+    //if( paErr != paNoError ) goto error;
+    return;
+
+error:
+    Pa_Terminate();
+    return;
+
+}
+
+void playSound(uint8_t loop, uint16_t length) {
+
+    patch.loop = loop;
+    patch.length = length;
+    patch.playing = true;
+    patch.count = 0;
+    initSound();
     paErr = Pa_StartStream( paStream );
-    Pa_Sleep(200);
     if( paErr != paNoError ) goto error;
     return;
 
@@ -177,7 +171,7 @@ void waveoff(OSC* o){
 }
 
 void sqwave(OSC* o){
-  if (o->count > o->halfcycle) {
+  if (o->count > o->wcycle) {
     o->count=0;
     if (o->output) o->output = 0;
     else o->output = o->vol;
@@ -204,7 +198,7 @@ if (o->increment) {
 }
 
 void noise(OSC* o){
-  if (o->count > o->halfcycle) {
+  if (o->count > o->wcycle) {
     o->count=0;
     o->output = random(0,o->vol);
   }
@@ -212,9 +206,9 @@ void noise(OSC* o){
 
 void sample(OSC* o) {
 
-    if (o->inccount > 640) o->inccount = 0;
+    if (o->samplepos > o->samplelength ) o->samplepos = 0;
 
-    if (o->count > o->halfcycle) {
+    if (o->count > o->wcycle) {
         o->count=0;
         if (o->output) o->output = 0;
         //else o->output = o->output=pgm_read_byte((uint32_t)(sfxBike) + o->inccount);
@@ -227,10 +221,9 @@ waveFunction Farr []  = {waveoff, sqwave, sawwave, triwave, noise, sample};
 void fakeISR(){
 
   osc1.count++;
-  osc1.inccount++;
-
   osc2.count++;
-  osc2.inccount++;
+  patch.count++;
+  if (patch.count >= patch.length && !patch.loop) stopSound();
 
   //if (tick==7) {
     Farr[osc1.wave](&osc1);
@@ -245,15 +238,11 @@ void fakeISR(){
 
 
 void setOSC(OSC* o,byte on, byte wave,int pitch,byte volume){
-  long temp;
+
   o->on = on;
   o->wave = wave;
   o->pitch = pitch;
   o->count = 0;
-  //temp = (384000/2)/pitch; // or 56819
-  // temp = (SAMPLE_RATE/PWMLEVELS/2)/pitch; // or 56819
-  temp = fastdiv((SAMPLE_RATE/PWMLEVELS/2),pitch); // or 56819
-  o->halfcycle = (uint16_t) temp;
 
   o->wcycle = fastdiv(SAMPLE_RATE/PWMLEVELS/2,pitch); // how many calls to ISR to complete a wave cycle
   o->vol = volume << 8;//volume;

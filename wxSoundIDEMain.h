@@ -18,6 +18,7 @@
 #include <wx/led.h>
 #include <wx/slider.h>
 #include <wx/panel.h>
+#include <wx/timer.h>
 #include <wx/dcclient.h>
 #include <wx/button.h>
 #include <wx/frame.h>
@@ -97,6 +98,7 @@ class wxSoundIDEFrame: public wxFrame
         wxSoundIDEFrame(wxWindow* parent,wxWindowID id = -1);
         virtual ~wxSoundIDEFrame();
 
+
     private:
 
         //(*Handlers(wxSoundIDEFrame)
@@ -109,6 +111,11 @@ class wxSoundIDEFrame: public wxFrame
         void OnRadioBox1Select1(wxCommandEvent& event);
         void OnPanel1Paint(wxPaintEvent& event);
         void OnPanel1Paint1(wxPaintEvent& event);
+        void OnPWMBtnClick(wxCommandEvent& event);
+        void OnLengthSlider1CmdSliderUpdated(wxScrollEvent& event);
+        void OnLoopClick(wxCommandEvent& event);
+        void OnPlayClick(wxCommandEvent& event);
+        void OnTimer(wxTimerEvent& event);
         //*)
 
         //(*Identifiers(wxSoundIDEFrame)
@@ -121,14 +128,20 @@ class wxSoundIDEFrame: public wxFrame
         static const long ID_SLIDER1;
         static const long ID_STATICTEXT3;
         static const long ID_STATICTEXT4;
+        static const long ID_SLIDER3;
         static const long ID_SLIDER2;
         static const long ID_RADIOBOX1;
+        static const long ID_BUTTON6;
+        static const long ID_LED2;
+        static const long ID_PANEL3;
+        static const long ID_BUTTON7;
+        static const long ID_LED3;
+        static const long ID_PANEL4;
         static const long ID_BUTTON2;
         static const long ID_LED1;
         static const long ID_PANEL2;
         static const long ID_CHECKBOX1;
         static const long ID_CHECKBOX2;
-        static const long ID_STATICTEXT2;
         static const long ID_STATICTEXT1;
         static const long idMenuQuit;
         static const long idMenuAbout;
@@ -138,23 +151,30 @@ class wxSoundIDEFrame: public wxFrame
         //(*Declarations(wxSoundIDEFrame)
         MovableButton* Rele;
         wxPanel* Osc1BtnPanel;
-        wxStaticText* Xpos;
         MovableButton* Sust;
         MovableButton* A0;
         wxClientDC* Osc1DC;
-        wxStaticText* StaticText2;
         wxSlider* PitchSlider1;
         wxCheckBox* PitchEnvOn;
         wxStaticText* PitchLabel1;
+        wxStaticText* LengthLabel;
         wxPanel* Panel1;
+        wxButton* Loop;
+        wxPanel* Panel3;
         wxCheckBox* VolEnvOn;
         wxSlider* VolSlider1;
         MovableButton* Decay;
         wxStatusBar* StatusBar1;
+        wxButton* Play;
         wxStaticText* VolLabel1;
+        wxLed* PlayLed;
         wxRadioBox* RadioBox1;
-        wxLed* OscLed1;
-        wxButton* Osc1;
+        wxPanel* Panel2;
+        wxLed* PWMLed;
+        wxButton* PWMBtn;
+        wxSlider* LengthSlider1;
+        wxLed* LoopLed;
+        wxTimer* timer;
         //*)
 
         DECLARE_EVENT_TABLE()

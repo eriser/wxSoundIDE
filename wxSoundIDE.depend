@@ -19,7 +19,7 @@
 
 1412497150 c:\wxwidgets-3.0.2\include\wx\msw\rcdefs.h
 
-1413386487 source:c:\dev\myprojects\wxprojects\wxsoundide\wxsoundideapp.cpp
+1413547331 source:c:\dev\myprojects\wxprojects\wxsoundide\wxsoundideapp.cpp
 	"wxSoundIDEApp.h"
 	"wxSoundIDEMain.h"
 	<wx/image.h>
@@ -900,7 +900,7 @@
 1412497150 c:\wxwidgets-3.0.2\include\wx\univ\theme.h
 	"wx/string.h"
 
-1413418952 c:\dev\myprojects\wxprojects\wxsoundide\wxsoundidemain.h
+1413542748 c:\dev\myprojects\wxprojects\wxsoundide\wxsoundidemain.h
 	<wx/stattext.h>
 	<wx/radiobox.h>
 	<wx/menu.h>
@@ -908,6 +908,7 @@
 	<wx/led.h>
 	<wx/slider.h>
 	<wx/panel.h>
+	<wx/timer.h>
 	<wx/dcclient.h>
 	<wx/button.h>
 	<wx/frame.h>
@@ -1446,16 +1447,17 @@
 
 1412497150 c:\wxwidgets-3.0.2\include\wx\msw\choice.h
 
-1413495596 c:\dev\myprojects\wxprojects\wxsoundide\synth.h
+1413546709 c:\dev\myprojects\wxprojects\wxsoundide\synth.h
 	<stdint.h>
 	<stdlib.h>
 	"oscillator.h"
 
-1413502260 source:c:\dev\myprojects\wxprojects\wxsoundide\wxsoundidemain.cpp
+1413547066 source:c:\dev\myprojects\wxprojects\wxsoundide\wxsoundidemain.cpp
 	"wxSoundIDEMain.h"
 	<wx/msgdlg.h>
 	"led.h"
 	"Synth.h"
+	"oscillator.h"
 	<wx/settings.h>
 	<wx/intl.h>
 	<wx/string.h>
@@ -1511,7 +1513,7 @@
 
 1412497150 c:\wxwidgets-3.0.2\include\wx\msw\msgdlg.h
 
-1413526590 source:c:\dev\myprojects\wxprojects\wxsoundide\synth.cpp
+1413547486 source:c:\dev\myprojects\wxprojects\wxsoundide\synth.cpp
 	"Synth.h"
 	"oscillator.h"
 	<math.h>
@@ -1520,7 +1522,7 @@
 	<iostream>
 	<fstream>
 
-1413504003 c:\dev\myprojects\wxprojects\wxsoundide\oscillator.h
+1413535487 c:\dev\myprojects\wxprojects\wxsoundide\oscillator.h
 
 1346458213 c:\dev\portaudio\include\portaudio.h
 
@@ -1561,4 +1563,51 @@
 	"fastdiv.h"
 
 1413486763 c:\dev\myprojects\wxprojects\wxsoundide\fastdiv.h
+
+1412497150 c:\wxwidgets-3.0.2\include\wx\spinctrl.h
+	"wx/defs.h"
+	"wx/spinbutt.h"
+	"wx/msw/spinctrl.h"
+	"wx/os2/spinctrl.h"
+	"wx/gtk/spinctrl.h"
+	"wx/gtk1/spinctrl.h"
+	"wx/generic/spinctlg.h"
+
+1412497150 c:\wxwidgets-3.0.2\include\wx\spinbutt.h
+	"wx/defs.h"
+	"wx/control.h"
+	"wx/event.h"
+	"wx/range.h"
+	"wx/univ/spinbutt.h"
+	"wx/msw/spinbutt.h"
+	"wx/motif/spinbutt.h"
+	"wx/gtk/spinbutt.h"
+	"wx/gtk1/spinbutt.h"
+	"wx/osx/spinbutt.h"
+	"wx/cocoa/spinbutt.h"
+	"wx/os2/spinbutt.h"
+
+1412497150 c:\wxwidgets-3.0.2\include\wx\range.h
+	"wx/defs.h"
+
+1412497150 c:\wxwidgets-3.0.2\include\wx\univ\spinbutt.h
+	"wx/univ/scrarrow.h"
+
+1412497150 c:\wxwidgets-3.0.2\include\wx\univ\scrarrow.h
+
+1412497150 c:\wxwidgets-3.0.2\include\wx\msw\spinbutt.h
+	"wx/control.h"
+	"wx/event.h"
+
+1412497150 c:\wxwidgets-3.0.2\include\wx\msw\spinctrl.h
+	"wx/spinbutt.h"
+	"wx/dynarray.h"
+
+1412497150 c:\wxwidgets-3.0.2\include\wx\generic\spinctlg.h
+	"wx/compositewin.h"
+	"wx/textctrl.h"
+
+1412497148 c:\wxwidgets-3.0.2\include\wx\compositewin.h
+	"wx/window.h"
+	"wx/containr.h"
 

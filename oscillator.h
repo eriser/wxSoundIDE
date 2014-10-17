@@ -8,50 +8,10 @@
 #define WNOISE   4
 #define WSAMPLE  5
 
-#define QUIET      'Q'
-#define REPORT     'R'
+#define MAXVOL  255
+#define DEFAULTPITCH 100
+#define DEFAULTLENGTH 65536/2
 
-#define OSC1SET    'A'
-#define OSC2SET    'B'
-#define OSC3SET    'C'
-
-#define OPITCHUP   'P'
-#define OPITCHDN   'p'
-#define OPITCHUPS   'O'
-#define OPITCHDNS   'o'
-#define OVOLUMEUP  'V'
-#define OVOLUMEDN  'v'
-
-#define OTOGGLE    '0'
-#define OSQUARE    '1'
-#define OSAW       '2'
-#define OTRI       '3'
-#define ONOISE     '4'
-
-// ADSR OPTIONS
-
-#define ADSRTOGGLE 'a'
-#define ATTACKLESS 'k'
-#define ATTACKMORE 'K'
-#define DELAYLESS  'd'
-#define DELAYMORE  'D'
-#define SUSTAINLESS   's'
-#define SUSTAINMORE   'S'
-#define RELEASELESS   'e'
-#define RELEASEMORE   'E'
-
-// VOLUME & PITCH RAMP OPTIONS
-#define VRAMPUP  '('
-#define VRAMPDOWN ')'
-#define PRAMPUP  '['
-#define PRAMPDOWN ']'
-
-// MODULATION OPTIONS
-#define COMBINE    'c'
-#define AM         'm'
-#define FM         'f'
-
-#define OLOCK      'l'
 
 //#include <Arduino.h>
 
@@ -64,38 +24,33 @@ typedef uint8_t boolean;
 struct ADSR
 {
   boolean on;
-  byte vol;
-  byte stage; // 0 for off, 1 for attack, 2 for decay, 3 for sustain, 4 for release
-  long count; // counter for envelop effects
-  long cycle; // period when adsrcount is increased
-  byte attackinc; // speed of attack
-  byte attacklevel; // end level of attack
-  byte decayinc; //speed of decay
-  byte decaylevel; // end level of decay
-  int sustaincount;
-  int sustain; // number of ticks to sustain, -1 forever
-  char releaseinc; //speed of decrease to 0
+  uint16_t Apos;
+  uint16_t Dpos;
+  uint16_t Spos;
+  uint16_t Rpos;
+  uint16_t Aval;
+  uint16_t Dval;
+  uint16_t Sval;
+  uint16_t Rval;
 };
 
 struct OSC {
   byte on;
   byte wave;
-  int pitch;
-  unsigned int count;
-  unsigned int inccount;
+  uint16_t pitch;
+  uint16_t count;
   int8_t increment;
-  unsigned int inccycle;
-  unsigned int halfcycle;
 
   int16_t wslope;
   uint16_t wcycle;
 
-  /** ADSR related properties **/
-
-
-
   uint16_t vol;
   uint16_t output; // output is stored as  16 bit value and shifted before its put in OCR2B
+
+  ADSR adsr;
+
+  uint16_t samplepos;
+  uint16_t samplelength;
 };
 
 #endif
