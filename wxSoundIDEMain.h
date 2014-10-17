@@ -18,14 +18,16 @@
 #include <wx/led.h>
 #include <wx/slider.h>
 #include <wx/panel.h>
-#include <wx/timer.h>
 #include <wx/dcclient.h>
 #include <wx/button.h>
 #include <wx/frame.h>
 #include <wx/statusbr.h>
 //*)
 
+#include <wx/timer.h>
+
 extern wxPoint A0Pos;
+extern uint16_t scopew;
 
 class MovableButton : public wxButton
     {
@@ -55,6 +57,17 @@ class MovableButton : public wxButton
                 const wxString& name = wxControlNameStr) : wxButton(parent, wxID_ANY, wxT(""))
         {
             MovableButton::parent = parent;
+        }
+
+        void SetPos(uint16_t pos, uint16_t val)
+        {
+            uint16_t w,h,h0;
+            w = parent->GetSize().GetWidth();
+            h = parent->GetSize().GetHeight();
+            h0 = h - 20;
+
+            //this->Move(parent->ScreenToClient(wxPoint(w*pos/32727, val*h/256)));
+            this->Move(wxPoint(w*(float)pos/scopew, h0-(float)val/255*h0));
         }
 
         void onMouseDown(wxMouseEvent& evt)
@@ -97,6 +110,7 @@ class wxSoundIDEFrame: public wxFrame
 
         wxSoundIDEFrame(wxWindow* parent,wxWindowID id = -1);
         virtual ~wxSoundIDEFrame();
+        void UpdateScope();
 
 
     private:
@@ -116,6 +130,8 @@ class wxSoundIDEFrame: public wxFrame
         void OnLoopClick(wxCommandEvent& event);
         void OnPlayClick(wxCommandEvent& event);
         void OnTimer(wxTimerEvent& event);
+        void OnCloseWindow(wxCloseEvent& event);
+
         //*)
 
         //(*Identifiers(wxSoundIDEFrame)
@@ -174,9 +190,9 @@ class wxSoundIDEFrame: public wxFrame
         wxButton* PWMBtn;
         wxSlider* LengthSlider1;
         wxLed* LoopLed;
-        wxTimer* timer;
         //*)
 
+        wxTimer* timer;
         DECLARE_EVENT_TABLE()
 };
 

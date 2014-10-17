@@ -22,6 +22,7 @@
 //Global variables
 uint32_t playhead = 0;
 wxPoint A0Pos;
+uint16_t scopew = 32727;
 
 //helper functions
 enum wxbuildinfoformat {
@@ -115,7 +116,7 @@ wxSoundIDEFrame::wxSoundIDEFrame(wxWindow* parent,wxWindowID id)
     VolLabel1 = new wxStaticText(this, ID_STATICTEXT3, _("Volume: 255"), wxPoint(144,24), wxSize(72,13), wxALIGN_LEFT, _T("ID_STATICTEXT3"));
     PitchLabel1 = new wxStaticText(this, ID_STATICTEXT4, _("Pitch: 100"), wxPoint(304,24), wxSize(56,13), wxALIGN_LEFT, _T("ID_STATICTEXT4"));
     PitchSlider1 = new wxSlider(this, ID_SLIDER3, 100, 1, 1000, wxPoint(296,48), wxSize(488,24), wxSL_BOTH, wxDefaultValidator, _T("ID_SLIDER3"));
-    LengthSlider1 = new wxSlider(this, ID_SLIDER2, 32727, 1, 65535, wxPoint(144,240), wxSize(632,24), wxSL_BOTH, wxDefaultValidator, _T("ID_SLIDER2"));
+    LengthSlider1 = new wxSlider(this, ID_SLIDER2, 10000, 1, 32727, wxPoint(144,240), wxSize(632,24), wxSL_BOTH, wxDefaultValidator, _T("ID_SLIDER2"));
     wxString __wxRadioBoxChoices_1[6] =
     {
     	_("OFF"),
@@ -178,17 +179,22 @@ wxSoundIDEFrame::wxSoundIDEFrame(wxWindow* parent,wxWindowID id)
     A0->SetMinSize(wxSize(20,20));
     A0->SetMaxSize(wxSize(0,0));
     A0->SetLabel(_("A")); A0->SetSize(20,20);
+    A0->SetPos(1300,255);
     Decay->SetMinSize(wxSize(20,20));
     Decay->SetMaxSize(wxSize(0,0));
     Decay->SetLabel(_("D")); Decay->SetSize(20,20);
+    Decay->SetPos(2600,127);
     Sust->SetMinSize(wxSize(20,20));
     Sust->SetMaxSize(wxSize(0,0));
     Sust->SetLabel(_("S")); Sust->SetSize(20,20);
+    Sust->SetPos(3900,127);
     Rele->SetMinSize(wxSize(20,20));
     Rele->SetMaxSize(wxSize(0,0));
     Rele->SetLabel(_("R")); Rele->SetSize(20,20);
+    Rele->SetPos(10000,0);
     timer = new wxTimer(this, 30);
     Connect(wxEVT_TIMER, wxTimerEventHandler(wxSoundIDEFrame::OnTimer));
+    Connect(wxEVT_CLOSE_WINDOW, wxCloseEventHandler(wxSoundIDEFrame::OnCloseWindow));
 }
 
 wxSoundIDEFrame::~wxSoundIDEFrame()
@@ -252,18 +258,7 @@ END_EVENT_TABLE()
 
 void wxSoundIDEFrame::OnPanel1Paint1(wxPaintEvent& event)
 {
-    int w,h;
-    w = Osc1DC->GetSize().GetWidth();
-    h = Osc1DC->GetSize().GetHeight();
-    Osc1DC->SetPen(wxPen(*wxBLACK_PEN));
-    Osc1DC->DrawRectangle(0,0,w,h);
-    Osc1DC->DrawLine(wxPoint(0,h),A0->GetPosition()+wxPoint(10,10));
-    Osc1DC->DrawLine(A0->GetPosition()+wxPoint(10,10),Decay->GetPosition()+wxPoint(10,10));
-    Osc1DC->DrawLine(Sust->GetPosition()+wxPoint(10,10),Decay->GetPosition()+wxPoint(10,10));
-    Osc1DC->DrawLine(Sust->GetPosition()+wxPoint(10,10),Rele->GetPosition()+wxPoint(10,10));
-    Osc1DC->DrawLine(wxPoint(w,h),Rele->GetPosition()+wxPoint(10,10));
-    Osc1DC->DrawLine(wxPoint(w,h),Rele->GetPosition()+wxPoint(10,10));
-
+    UpdateScope();
 }
 
 void wxSoundIDEFrame::OnPWMBtnClick(wxCommandEvent& event)
@@ -291,16 +286,7 @@ void wxSoundIDEFrame::OnPlayClick(wxCommandEvent& event)
 void wxSoundIDEFrame::OnTimer(wxTimerEvent& event)
 {
 	//timer->Stop();
-	int w,h;
-
-    w = Osc1DC->GetSize().GetWidth();
-    h = Osc1DC->GetSize().GetHeight();
-    uint16_t prevplayhead = playhead;
-    playhead = (w*patch.count)/(65535);
-    Osc1DC->SetPen(wxPen(*wxRED_PEN));
-    Osc1DC->DrawLine(wxPoint(playhead,h),wxPoint(playhead,0));
-    Osc1DC->SetPen(wxPen(*wxWHITE_PEN));
-    Osc1DC->DrawLine(wxPoint(prevplayhead,h),wxPoint(prevplayhead,0));
+	UpdateScope();
     if (patch.playing) {
             PlayLed->Switch();
 
@@ -308,4 +294,34 @@ void wxSoundIDEFrame::OnTimer(wxTimerEvent& event)
     } else {
             PlayLed->SwitchOff();
         }
+}
+
+void wxSoundIDEFrame::UpdateScope()
+{
+    int w,h;
+    w = Osc1DC->GetSize().GetWidth();
+    h = Osc1DC->GetSize().GetHeight();
+    uint16_t prevplayhead = playhead;
+    playhead = (w*patch.count)/(32727);
+    Osc1DC->SetPen(wxPen(*wxWHITE_PEN));
+    Osc1DC->DrawRectangle(0,0,w,h);
+    Osc1DC->SetPen(wxPen(*wxGREY_PEN));
+    Osc1DC->DrawLine(wxPoint(0,h-10),A0->GetPosition()+wxPoint(10,10));
+    Osc1DC->SetPen(wxPen(*wxBLACK_PEN));
+    Osc1DC->DrawLine(A0->GetPosition()+wxPoint(10,10),Decay->GetPosition()+wxPoint(10,10));
+    Osc1DC->DrawLine(Sust->GetPosition()+wxPoint(10,10),Decay->GetPosition()+wxPoint(10,10));
+    Osc1DC->DrawLine(Sust->GetPosition()+wxPoint(10,10),Rele->GetPosition()+wxPoint(10,10));
+    Osc1DC->DrawLine(wxPoint(w,h),Rele->GetPosition()+wxPoint(10,10));
+    Osc1DC->DrawLine(wxPoint(w,h),Rele->GetPosition()+wxPoint(10,10));
+    Osc1DC->SetPen(wxPen(*wxRED_PEN));
+    Osc1DC->DrawLine(wxPoint(playhead,h),wxPoint(playhead,0));
+    Osc1DC->SetPen(wxPen(*wxWHITE_PEN));
+    Osc1DC->DrawLine(wxPoint(prevplayhead,h),wxPoint(prevplayhead,0));
+}
+
+void wxSoundIDEFrame::OnCloseWindow(wxCloseEvent& event)
+{
+    timer->Stop();
+    killSound();
+    this->Destroy();
 }

@@ -19,12 +19,12 @@
 
 1412497150 c:\wxwidgets-3.0.2\include\wx\msw\rcdefs.h
 
-1413547331 source:c:\dev\myprojects\wxprojects\wxsoundide\wxsoundideapp.cpp
+1413575501 source:c:\dev\myprojects\wxprojects\wxsoundide\wxsoundideapp.cpp
 	"wxSoundIDEApp.h"
 	"wxSoundIDEMain.h"
 	<wx/image.h>
 
-1413239451 c:\dev\myprojects\wxprojects\wxsoundide\wxsoundideapp.h
+1413575535 c:\dev\myprojects\wxprojects\wxsoundide\wxsoundideapp.h
 	<wx/app.h>
 	"Synth.h"
 
@@ -900,7 +900,7 @@
 1412497150 c:\wxwidgets-3.0.2\include\wx\univ\theme.h
 	"wx/string.h"
 
-1413542748 c:\dev\myprojects\wxprojects\wxsoundide\wxsoundidemain.h
+1413577736 c:\dev\myprojects\wxprojects\wxsoundide\wxsoundidemain.h
 	<wx/stattext.h>
 	<wx/radiobox.h>
 	<wx/menu.h>
@@ -908,11 +908,11 @@
 	<wx/led.h>
 	<wx/slider.h>
 	<wx/panel.h>
-	<wx/timer.h>
 	<wx/dcclient.h>
 	<wx/button.h>
 	<wx/frame.h>
 	<wx/statusbr.h>
+	<wx/timer.h>
 
 1412497150 c:\wxwidgets-3.0.2\include\wx\stattext.h
 	"wx/defs.h"
@@ -1447,12 +1447,12 @@
 
 1412497150 c:\wxwidgets-3.0.2\include\wx\msw\choice.h
 
-1413546709 c:\dev\myprojects\wxprojects\wxsoundide\synth.h
+1413574453 c:\dev\myprojects\wxprojects\wxsoundide\synth.h
 	<stdint.h>
 	<stdlib.h>
 	"oscillator.h"
 
-1413547066 source:c:\dev\myprojects\wxprojects\wxsoundide\wxsoundidemain.cpp
+1413577291 source:c:\dev\myprojects\wxprojects\wxsoundide\wxsoundidemain.cpp
 	"wxSoundIDEMain.h"
 	<wx/msgdlg.h>
 	"led.h"
@@ -1513,7 +1513,7 @@
 
 1412497150 c:\wxwidgets-3.0.2\include\wx\msw\msgdlg.h
 
-1413547486 source:c:\dev\myprojects\wxprojects\wxsoundide\synth.cpp
+1413574438 source:c:\dev\myprojects\wxprojects\wxsoundide\synth.cpp
 	"Synth.h"
 	"oscillator.h"
 	<math.h>

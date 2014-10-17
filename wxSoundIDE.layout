@@ -1,16 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
-	<File name="Synth.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3014" topLine="280" />
-		</Cursor>
-	</File>
-	<File name="Synth.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="397" topLine="8" />
-		</Cursor>
-	</File>
 	<File name="fastdiv.cpp" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="140" topLine="4" />
@@ -26,24 +16,52 @@
 			<Cursor1 position="2883" topLine="119" />
 		</Cursor>
 	</File>
-	<File name="wxSoundIDEApp.cpp" open="1" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="wxSoundIDEApp.cpp" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="520" topLine="9" />
+			<Cursor1 position="727" topLine="7" />
 		</Cursor>
 	</File>
-	<File name="wxSoundIDEApp.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="wxSoundIDEApp.h" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="394" topLine="0" />
+			<Cursor1 position="416" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="wxSoundIDEMain.cpp" open="1" top="1" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="wxSoundIDEMain.cpp" open="1" top="1" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="13142" topLine="288" />
+			<Cursor1 position="11983" topLine="227" />
 		</Cursor>
+		<Folding>
+			<Collapse line="200" />
+			<Collapse line="207" />
+			<Collapse line="212" />
+			<Collapse line="218" />
+			<Collapse line="223" />
+			<Collapse line="231" />
+			<Collapse line="240" />
+			<Collapse line="248" />
+			<Collapse line="264" />
+			<Collapse line="271" />
+			<Collapse line="322" />
+		</Folding>
 	</File>
 	<File name="wxSoundIDEMain.h" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="3609" topLine="103" />
+			<Cursor1 position="3230" topLine="99" />
+		</Cursor>
+		<Folding>
+			<Collapse line="57" />
+			<Collapse line="73" />
+			<Collapse line="81" />
+		</Folding>
+	</File>
+	<File name="Synth.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3895" topLine="195" />
+		</Cursor>
+	</File>
+	<File name="Synth.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="402" topLine="8" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

@@ -77,6 +77,7 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
     uint8_t *out = (uint8_t*)outputBuffer;
     unsigned int i;
     unsigned long j =0;
+    uint8_t last=0;
     (void) inputBuffer; /* Prevent unused variable warning. */
 
     /** create sound buffer by using the ISR **/
@@ -85,8 +86,8 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
     //osc1.count = osc2.count = 0;
 
     for (j=0;j<framesPerBuffer;j+=PWMLEVELS) {
-            if (patch.playing) fakeISR(); /** create next sample **/
-            else return paAbort;
+            fakeISR(); /** create next sample **/
+            if (!patch.playing) fakeOCR2B=0;
 
             /** Now create duty cycle **/
             skipstep = (fakeOCR2B+1) / PWMLEVELS;
@@ -97,10 +98,10 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
             if (PWMemulation) {
                 for (i=0; i< PWMLEVELS; i++) {
                     if (i >= skipstep) {
-                        *out++ = 0;
+                        *out++ = int(0+fakeOCR2B)/2;
                     }
                     else {
-                        *out++ = 255;
+                        *out++ = int(255+fakeOCR2B)/2;
                     }
                 }
             } else {
@@ -116,8 +117,6 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
 void stopSound() {
     patch.playing = false;
     patch.count=0;
-    //paErr = Pa_StopStream( paStream );
-    //paErr = Pa_CloseStream( paStream );
 }
 
 
@@ -136,23 +135,6 @@ void initSound() {
                                 &data );
     if( paErr != paNoError ) goto error;
 
-    //paErr = Pa_StartStream( paStream );
-    //if( paErr != paNoError ) goto error;
-    return;
-
-error:
-    Pa_Terminate();
-    return;
-
-}
-
-void playSound(uint8_t loop, uint16_t length) {
-
-    patch.loop = loop;
-    patch.length = length;
-    patch.playing = true;
-    patch.count = 0;
-    initSound();
     paErr = Pa_StartStream( paStream );
     if( paErr != paNoError ) goto error;
     return;
@@ -161,6 +143,27 @@ error:
     Pa_Terminate();
     return;
 
+}
+
+void killSound()
+{
+     paErr = Pa_StopStream( paStream );
+     if( paErr != paNoError ) goto error;
+     paErr = Pa_CloseStream( paStream );
+     if( paErr != paNoError ) goto error;
+
+error:
+    Pa_Terminate();
+    return;
+}
+
+void playSound(uint8_t loop, uint16_t length) {
+
+    patch.loop = loop;
+    patch.length = length;
+    patch.playing = true;
+    patch.count = 0;
+    return;
 }
 
 /** SOUND FUNCTIONS **/
@@ -223,7 +226,10 @@ void fakeISR(){
   osc1.count++;
   osc2.count++;
   patch.count++;
-  if (patch.count >= patch.length && !patch.loop) stopSound();
+  if (patch.count >= patch.length) {
+        if (patch.loop) patch.count = 0;
+        else stopSound();
+  }
 
   //if (tick==7) {
     Farr[osc1.wave](&osc1);

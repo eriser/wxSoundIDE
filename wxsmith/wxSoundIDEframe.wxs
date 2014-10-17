@@ -74,9 +74,9 @@
 			<handler function="OnPitchSlider1CmdSliderUpdated" entry="EVT_COMMAND_SLIDER_UPDATED" />
 		</object>
 		<object class="wxSlider" name="ID_SLIDER2" variable="LengthSlider1" member="yes">
-			<value>32727</value>
+			<value>10000</value>
 			<min>1</min>
-			<max>65535</max>
+			<max>32727</max>
 			<pos>144,240</pos>
 			<size>632,24</size>
 			<style>wxSL_BOTH</style>

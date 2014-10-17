@@ -19,7 +19,8 @@ IMPLEMENT_APP(wxSoundIDEApp);
 bool wxSoundIDEApp::OnInit()
 {
     testOsc();
-    //initSound();
+    initSound();
+
     //(*AppInitialize
     bool wxsOK = true;
     wxInitAllImageHandlers();
@@ -34,3 +35,10 @@ bool wxSoundIDEApp::OnInit()
     return wxsOK;
 
 }
+
+/*
+int wxSoundIDEApp::OnExit()
+{
+    killSound();
+    return 0;
+}*/
