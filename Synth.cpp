@@ -304,42 +304,49 @@ void setOSC(OSC* o,byte on, byte wave,int pitch,byte volume){
   o->output = 0;
 }
 
-void testOsc(){
-
-  std::ofstream myfile;
-  setOSC(&osc1,true,WOFF,100,127);
-uint16_t i, j;
+void output2file() {
+    std::ofstream myfile;
+    uint16_t i, j;
     myfile.open ("output.txt");
+    patch.count=0;
 
     /** create sound buffer by using the ISR **/
-
-    //osc1.count = osc2.count = 0;
-
     for (j=0;j<NUMFRAMES;j+=PWMLEVELS) {
             fakeISR(); /** create next sample **/
 
-            /** Now create duty cycle **/
-            skipstep = (fakeOCR2B+1) / PWMLEVELS;
-            // if OCR2B is 255, skipstep is 16, and all output is 255
-            // if OCR2B is 127, skipstep is 8, and 50% output is 255
-            // if OCR2B is 64, skipstep is 4, and 75% output is 255
+            for (i=0; i< PWMLEVELS; i++) { myfile << int(fakeOCR2B) << ","; }
 
-            if (PWMemulation) {
-                for (i=0; i< PWMLEVELS; i++) {
-                    if (i >= skipstep) {
-                        //*out++ = 0;
-                    }
-                    else {
-                        //*out++ = 255;
-                    }
-                }
-            } else {
-                for (i=0; i< PWMLEVELS; i++) { myfile << int(fakeOCR2B) << ","; }
-
-            }
             myfile << std::endl;
     }
     myfile.close();
+}
+
+void outputADSR(uint16_t runtimes) {
+    std::ofstream myfile;
+    uint16_t i, j;
+    myfile.open ("output.txt");
+    patch.length=runtimes;
+    patch.loop = false;
+    patch.playing = false;
+    osc1.vol = 0;
+    patch.count = 0;
+    osc1.count=0;
+    osc1.adsr.on = true;
+
+    /** create sound buffer by using the ISR **/
+    while (patch.count != patch.length) {
+        for (j=0;j<NUMFRAMES;j+=PWMLEVELS) {
+            fakeISR(); /** create next sample **/
+
+            myfile << int(fakeOCR2B) << ",";
+        }
+    }
+    myfile.close();
+}
+
+void testOsc(){
+
+  setOSC(&osc1,true,WOFF,100,127);
   setOSC(&osc2,true,WSAW,100,240);
 
 }

@@ -76,6 +76,7 @@ const long wxSoundIDEFrame::ID_PANEL2 = wxNewId();
 const long wxSoundIDEFrame::ID_CHECKBOX1 = wxNewId();
 const long wxSoundIDEFrame::ID_CHECKBOX2 = wxNewId();
 const long wxSoundIDEFrame::ID_STATICTEXT1 = wxNewId();
+const long wxSoundIDEFrame::ID_BUTTON8 = wxNewId();
 const long wxSoundIDEFrame::idMenuQuit = wxNewId();
 const long wxSoundIDEFrame::idMenuAbout = wxNewId();
 const long wxSoundIDEFrame::ID_STATUSBAR1 = wxNewId();
@@ -149,6 +150,7 @@ wxSoundIDEFrame::wxSoundIDEFrame(wxWindow* parent,wxWindowID id)
     PitchCheckBox = new wxCheckBox(this, ID_CHECKBOX2, _("Envelope"), wxPoint(368,24), wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
     PitchCheckBox->SetValue(false);
     LengthLabel = new wxStaticText(this, ID_STATICTEXT1, _("Length: 0 sec"), wxPoint(152,272), wxSize(104,16), 0, _T("ID_STATICTEXT1"));
+    OutputFile = new wxButton(this, ID_BUTTON8, _("ADSR to FILE"), wxPoint(32,296), wxSize(80,23), 0, wxDefaultValidator, _T("ID_BUTTON8"));
     MenuBar1 = new wxMenuBar();
     Menu1 = new wxMenu();
     MenuItem1 = new wxMenuItem(Menu1, idMenuQuit, _("Quit\tAlt-F4"), _("Quit the application"), wxITEM_NORMAL);
@@ -175,6 +177,7 @@ wxSoundIDEFrame::wxSoundIDEFrame(wxWindow* parent,wxWindowID id)
     Connect(ID_BUTTON7,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&wxSoundIDEFrame::OnPlayClick);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&wxSoundIDEFrame::OnLoopClick);
     Connect(ID_CHECKBOX1,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&wxSoundIDEFrame::OnADSRCheckBoxClick);
+    Connect(ID_BUTTON8,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&wxSoundIDEFrame::OnOutputFileClick);
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&wxSoundIDEFrame::OnQuit);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&wxSoundIDEFrame::OnAbout);
     //*)
@@ -333,11 +336,14 @@ void wxSoundIDEFrame::UpdateScope()
         Osc1DC->DrawLine(wxPoint(prevplayhead,h-11),wxPoint(prevplayhead,11));
         Osc1DC->SetPen(wxPen(*wxBLUE_PEN));
         Osc1DC->DrawLine(wxPoint(playhead,h-11),wxPoint(playhead,11));
+        if (ADSRCheckBox->IsChecked()) VolSlider1->SetValue(osc1.vol>>8);
     }
     attax = A0->GetPosition().x;
     decayx = Decay->GetPosition().x;
     sustx = Sust->GetPosition().x;
     relex = Rele->GetPosition().x;
+
+
 }
 
 void wxSoundIDEFrame::OnCloseWindow(wxCloseEvent& event)
@@ -364,9 +370,21 @@ void wxSoundIDEFrame::OnADSRCheckBoxClick(wxCommandEvent& event)
                 timer->Stop();
                 stopSound();
                 setADSR(&osc1,adsr);
+                osc1.vol = 0;
                 timer->Start();
                 playSound(LoopLed->IsOn(), LengthSlider1->GetValue());
         } else {
                 setADSR(&osc1,adsr);
+    }
+}
+
+void wxSoundIDEFrame::OnOutputFileClick(wxCommandEvent& event)
+{
+    if (patch.playing) {
+                timer->Stop();
+                stopSound();
+                outputADSR(LengthSlider1->GetValue());
+        } else {
+                outputADSR(LengthSlider1->GetValue());
     }
 }

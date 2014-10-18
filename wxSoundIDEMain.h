@@ -156,6 +156,7 @@ class wxSoundIDEFrame: public wxFrame
         void OnTimer(wxTimerEvent& event);
         void OnCloseWindow(wxCloseEvent& event);
         void OnADSRCheckBoxClick(wxCommandEvent& event);
+        void OnOutputFileClick(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(wxSoundIDEFrame)
@@ -183,6 +184,7 @@ class wxSoundIDEFrame: public wxFrame
         static const long ID_CHECKBOX1;
         static const long ID_CHECKBOX2;
         static const long ID_STATICTEXT1;
+        static const long ID_BUTTON8;
         static const long idMenuQuit;
         static const long idMenuAbout;
         static const long ID_STATUSBAR1;
@@ -192,6 +194,7 @@ class wxSoundIDEFrame: public wxFrame
         MovableButton* Rele;
         wxPanel* Osc1BtnPanel;
         MovableButton* Sust;
+        wxButton* OutputFile;
         MovableButton* A0;
         wxClientDC* Osc1DC;
         wxCheckBox* ADSRCheckBox;
