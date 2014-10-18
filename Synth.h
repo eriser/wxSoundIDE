@@ -23,6 +23,7 @@ extern void killSound();
 extern void playSound(uint8_t, uint16_t);
 extern void stopSound();
 extern void setOSC(OSC*,byte, byte,int,byte);
+extern void setADSR(OSC* o, ADSR adsr);
 
 extern OSC osc1,osc2;
 extern boolean PWMemulation;

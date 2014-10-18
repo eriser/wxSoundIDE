@@ -144,10 +144,10 @@ wxSoundIDEFrame::wxSoundIDEFrame(wxWindow* parent,wxWindowID id)
     Loop = new wxButton(Osc1BtnPanel, ID_BUTTON2, _("LOOP"), wxPoint(24,0), wxSize(80,24), 0, wxDefaultValidator, _T("ID_BUTTON2"));
     LoopLed = new wxLed(Osc1BtnPanel,ID_LED1,wxColour(128,128,128),wxColour(11,125,181),wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE),wxDefaultPosition,wxDefaultSize);
     LoopLed->SwitchOn();
-    VolEnvOn = new wxCheckBox(this, ID_CHECKBOX1, _("ADSR"), wxPoint(224,24), wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
-    VolEnvOn->SetValue(false);
-    PitchEnvOn = new wxCheckBox(this, ID_CHECKBOX2, _("Envelope"), wxPoint(368,24), wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
-    PitchEnvOn->SetValue(false);
+    ADSRCheckBox = new wxCheckBox(this, ID_CHECKBOX1, _("ADSR"), wxPoint(224,24), wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
+    ADSRCheckBox->SetValue(false);
+    PitchCheckBox = new wxCheckBox(this, ID_CHECKBOX2, _("Envelope"), wxPoint(368,24), wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
+    PitchCheckBox->SetValue(false);
     LengthLabel = new wxStaticText(this, ID_STATICTEXT1, _("Length: 0 sec"), wxPoint(152,272), wxSize(104,16), 0, _T("ID_STATICTEXT1"));
     MenuBar1 = new wxMenuBar();
     Menu1 = new wxMenu();
@@ -174,6 +174,7 @@ wxSoundIDEFrame::wxSoundIDEFrame(wxWindow* parent,wxWindowID id)
     Connect(ID_BUTTON6,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&wxSoundIDEFrame::OnPWMBtnClick);
     Connect(ID_BUTTON7,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&wxSoundIDEFrame::OnPlayClick);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&wxSoundIDEFrame::OnLoopClick);
+    Connect(ID_CHECKBOX1,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&wxSoundIDEFrame::OnADSRCheckBoxClick);
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&wxSoundIDEFrame::OnQuit);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&wxSoundIDEFrame::OnAbout);
     //*)
@@ -194,7 +195,7 @@ wxSoundIDEFrame::wxSoundIDEFrame(wxWindow* parent,wxWindowID id)
     Rele->SetMaxSize(wxSize(0,0));
     Rele->SetLabel(_("R")); Rele->SetSize(20,20);
     Rele->SetPos(10000,0);
-    timer = new wxTimer(this, 30);
+    timer = new wxTimer(this, 3);
     Connect(wxEVT_TIMER, wxTimerEventHandler(wxSoundIDEFrame::OnTimer));
     Connect(wxEVT_CLOSE_WINDOW, wxCloseEventHandler(wxSoundIDEFrame::OnCloseWindow));
 }
@@ -344,4 +345,28 @@ void wxSoundIDEFrame::OnCloseWindow(wxCloseEvent& event)
     timer->Stop();
     killSound();
     this->Destroy();
+}
+
+void wxSoundIDEFrame::OnADSRCheckBoxClick(wxCommandEvent& event)
+{
+    ADSR adsr;
+    adsr.on = ADSRCheckBox->IsChecked();
+    adsr.Apos = float((A0->GetPosition().x))/Panel1->GetSize().GetWidth()*scopew;
+    adsr.Aval = 255-float(A0->GetPosition().y)/Panel1->GetSize().GetHeight()*255;
+    adsr.Dpos = float((Decay->GetPosition().x))/Panel1->GetSize().GetWidth()*scopew;
+    adsr.Dval = 255-float(Decay->GetPosition().y)/Panel1->GetSize().GetHeight()*255;
+    adsr.Spos = float((Sust->GetPosition().x))/Panel1->GetSize().GetWidth()*scopew;
+    adsr.Sval = 255-float(Sust->GetPosition().y)/Panel1->GetSize().GetHeight()*255;
+    adsr.Rpos = float((Rele->GetPosition().x))/Panel1->GetSize().GetWidth()*scopew;
+    adsr.Rval = 255-float(Rele->GetPosition().y)/Panel1->GetSize().GetHeight()*255;
+
+    if (patch.playing) {
+                timer->Stop();
+                stopSound();
+                setADSR(&osc1,adsr);
+                timer->Start();
+                playSound(LoopLed->IsOn(), LengthSlider1->GetValue());
+        } else {
+                setADSR(&osc1,adsr);
+    }
 }

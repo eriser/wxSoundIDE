@@ -155,7 +155,7 @@ class wxSoundIDEFrame: public wxFrame
         void OnPlayClick(wxCommandEvent& event);
         void OnTimer(wxTimerEvent& event);
         void OnCloseWindow(wxCloseEvent& event);
-
+        void OnADSRCheckBoxClick(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(wxSoundIDEFrame)
@@ -194,14 +194,14 @@ class wxSoundIDEFrame: public wxFrame
         MovableButton* Sust;
         MovableButton* A0;
         wxClientDC* Osc1DC;
+        wxCheckBox* ADSRCheckBox;
         wxSlider* PitchSlider1;
-        wxCheckBox* PitchEnvOn;
+        wxCheckBox* PitchCheckBox;
         wxStaticText* PitchLabel1;
         wxStaticText* LengthLabel;
         wxPanel* Panel1;
         wxButton* Loop;
         wxPanel* Panel3;
-        wxCheckBox* VolEnvOn;
         wxSlider* VolSlider1;
         MovableButton* Decay;
         wxStatusBar* StatusBar1;

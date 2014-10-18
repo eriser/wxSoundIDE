@@ -150,11 +150,12 @@
 				<off_colour>wxSYS_COLOUR_BTNFACE</off_colour>
 			</object>
 		</object>
-		<object class="wxCheckBox" name="ID_CHECKBOX1" variable="VolEnvOn" member="yes">
+		<object class="wxCheckBox" name="ID_CHECKBOX1" variable="ADSRCheckBox" member="yes">
 			<label>ADSR</label>
 			<pos>224,24</pos>
+			<handler function="OnADSRCheckBoxClick" entry="EVT_CHECKBOX" />
 		</object>
-		<object class="wxCheckBox" name="ID_CHECKBOX2" variable="PitchEnvOn" member="yes">
+		<object class="wxCheckBox" name="ID_CHECKBOX2" variable="PitchCheckBox" member="yes">
 			<label>Envelope</label>
 			<pos>368,24</pos>
 		</object>

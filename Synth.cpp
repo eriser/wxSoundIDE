@@ -31,7 +31,6 @@ int pitchbend = 16;
 
 OSC osc1,osc2;
 Instrument patch;
-ADSR adsr;
 OSC* oscptr;
 boolean osc12Lock = false;
 char tick=0;
@@ -77,7 +76,6 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
     uint8_t *out = (uint8_t*)outputBuffer;
     unsigned int i;
     unsigned long j =0;
-    uint8_t last=0;
     (void) inputBuffer; /* Prevent unused variable warning. */
 
     /** create sound buffer by using the ISR **/
@@ -226,9 +224,19 @@ void fakeISR(){
   osc1.count++;
   osc2.count++;
   patch.count++;
+
   if (patch.count >= patch.length) {
         if (patch.loop) patch.count = 0;
         else stopSound();
+  }
+
+  if (osc1.adsr.on) {
+    if (patch.count > osc1.adsr.Rpos) osc1.adsrinc = 0;
+    else if (patch.count > osc1.adsr.Spos) osc1.adsrinc = osc1.adsr.Rinc;
+    else if (patch.count > osc1.adsr.Dpos) osc1.adsrinc = osc1.adsr.Sinc;
+    else if (patch.count > osc1.adsr.Apos) osc1.adsrinc = osc1.adsr.Dinc;
+    else osc1.adsrinc = osc1.adsr.Ainc;
+    if (osc1.vol > osc1.adsrinc && osc1.vol < 65536 - osc1.adsrinc) osc1.vol += osc1.adsrinc;
   }
 
   //if (tick==7) {
@@ -241,14 +249,43 @@ void fakeISR(){
   //} else tick++;
 }
 
-
+void setADSR(OSC* o, ADSR adsr){
+     o->adsr.on = adsr.on;
+     o->adsr.Apos = adsr.Apos;
+     o->adsr.Dpos = adsr.Dpos;
+     o->adsr.Spos = adsr.Spos;
+     o->adsr.Rpos = adsr.Rpos;
+     o->adsr.Aval = adsr.Aval;
+     o->adsr.Dval = adsr.Dval;
+     o->adsr.Sval = adsr.Sval;
+     o->adsr.Rval = adsr.Rval;
+     /*precalculate slopes*/
+     o->adsr.Ainc = fastdiv((int16_t)adsr.Aval<<8, adsr.Apos+1);
+     // Decay
+     if (adsr.Aval > adsr.Dval) {
+        o->adsr.Dinc = -fastdiv((int16_t)(adsr.Aval-adsr.Dval)<<8, (adsr.Dpos-adsr.Apos)+1);
+     } else {
+        o->adsr.Dinc = fastdiv((int16_t)(adsr.Dval-adsr.Aval)<<8, (adsr.Dpos-adsr.Apos)+1);
+     }
+     // Sustain
+     if (adsr.Dval > adsr.Sval) {
+        o->adsr.Sinc = -fastdiv((int16_t)(adsr.Dval-adsr.Sval)<<8, (adsr.Spos-adsr.Dpos)+1);
+     } else {
+        o->adsr.Sinc = fastdiv((int16_t)(adsr.Sval-adsr.Dval)<<8, (adsr.Spos-adsr.Dpos)+1);
+     }
+     // Release
+     if (adsr.Sval > adsr.Rval) {
+        o->adsr.Rinc = -fastdiv((int16_t)(adsr.Sval-adsr.Rval)<<8, (adsr.Rpos-adsr.Spos)+1);
+     } else {
+        o->adsr.Rinc = fastdiv((int16_t)(adsr.Rval-adsr.Sval)<<8, (adsr.Rpos-adsr.Spos)+1);
+     }
+}
 
 void setOSC(OSC* o,byte on, byte wave,int pitch,byte volume){
 
   o->on = on;
   o->wave = wave;
   o->pitch = pitch;
-  o->count = 0;
 
   o->wcycle = fastdiv(SAMPLE_RATE/PWMLEVELS/2,pitch); // how many calls to ISR to complete a wave cycle
   o->vol = volume << 8;//volume;
@@ -267,18 +304,10 @@ void setOSC(OSC* o,byte on, byte wave,int pitch,byte volume){
   o->output = 0;
 }
 
-void setWave(int wf) {
-    setOSC(&osc1,true,wf,osc1.pitch,osc1.vol);
-}
-
-void setVolume(int vol) {
-    setOSC(&osc1,true,osc1.wave,osc1.pitch,vol);
-}
-
 void testOsc(){
 
   std::ofstream myfile;
-  setOSC(&osc1,true,WTRI,100,127);
+  setOSC(&osc1,true,WOFF,100,127);
 uint16_t i, j;
     myfile.open ("output.txt");
 

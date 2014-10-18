@@ -28,10 +28,14 @@ struct ADSR
   uint16_t Dpos;
   uint16_t Spos;
   uint16_t Rpos;
-  uint16_t Aval;
-  uint16_t Dval;
-  uint16_t Sval;
-  uint16_t Rval;
+  uint8_t Aval;
+  uint8_t Dval;
+  uint8_t Sval;
+  uint8_t Rval;
+  int16_t Ainc;
+  int16_t Dinc;
+  int16_t Sinc;
+  int16_t Rinc;
 };
 
 struct OSC {
@@ -48,6 +52,7 @@ struct OSC {
   uint16_t output; // output is stored as  16 bit value and shifted before its put in OCR2B
 
   ADSR adsr;
+  int16_t adsrinc;
 
   uint16_t samplepos;
   uint16_t samplelength;
