@@ -23,6 +23,7 @@
 uint32_t playhead = 0;
 wxPoint A0Pos;
 uint16_t scopew = 32727;
+int16_t attax, decayx, sustx, relex;
 
 //helper functions
 enum wxbuildinfoformat {
@@ -97,7 +98,8 @@ wxSoundIDEFrame::wxSoundIDEFrame(wxWindow* parent,wxWindowID id)
     Create(parent, wxID_ANY, _("wxSoundIde - Copyright 2014 Jonne Valola"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("wxID_ANY"));
     SetClientSize(wxSize(800,589));
     SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
-    Panel1 = new wxPanel(this, ID_PANEL1, wxPoint(144,80), wxSize(632,152), wxSIMPLE_BORDER|wxTAB_TRAVERSAL, _T("ID_PANEL1"));
+    Panel1 = new wxPanel(this, ID_PANEL1, wxPoint(144,80), wxSize(632,152), 0, _T("ID_PANEL1"));
+    Panel1->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_MENU));
     Decay = new MovableButton(Panel1, ID_BUTTON3, _("D"), wxPoint(56,48), wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON3"));
     Decay->SetMinSize(wxSize(20,20));
     Decay->SetMaxSize(wxSize(0,0));
@@ -242,12 +244,21 @@ void wxSoundIDEFrame::OnLengthSlider1CmdSliderUpdated(wxScrollEvent& event)
     wxString newlabel;
     newlabel << "Length: " << LengthSlider1->GetValue() << " ticks, " << (float(LengthSlider1->GetValue())*PWMLEVELS/SAMPLE_RATE) << " sec";
     LengthLabel->SetLabelText(newlabel);
+
+    if (patch.playing) {
+            timer->Stop();
+            stopSound();
+            PlayLed->SwitchOn();
+            playSound(LoopLed->IsOn(), LengthSlider1->GetValue());
+            timer->Start();
+    }
 }
 
 
 void wxSoundIDEFrame::OnLoopClick(wxCommandEvent& event)
 {
     LoopLed->Switch();
+    patch.loop = LoopLed->IsOn();
 }
 
 BEGIN_EVENT_TABLE(MovableButton,wxButton)
@@ -302,21 +313,30 @@ void wxSoundIDEFrame::UpdateScope()
     w = Osc1DC->GetSize().GetWidth();
     h = Osc1DC->GetSize().GetHeight();
     uint16_t prevplayhead = playhead;
-    playhead = (w*patch.count)/(32727);
+    playhead = (w*patch.count)/(32727-22)+11;
     Osc1DC->SetPen(wxPen(*wxWHITE_PEN));
+    Osc1DC->SetBrush(wxBrush(wxColour(255,255,255),wxBRUSHSTYLE_SOLID));
     Osc1DC->DrawRectangle(0,0,w,h);
+    //Osc1DC->SetBrush(wxBrush(wxColour(220,220,220),wxBRUSHSTYLE_SOLID));
     Osc1DC->SetPen(wxPen(*wxGREY_PEN));
-    Osc1DC->DrawLine(wxPoint(0,h-10),A0->GetPosition()+wxPoint(10,10));
+    Osc1DC->DrawRectangle(10,10,w-20,h-20);
     Osc1DC->SetPen(wxPen(*wxBLACK_PEN));
+    Osc1DC->DrawLine(wxPoint(11,h-11),A0->GetPosition()+wxPoint(10,10));
+
     Osc1DC->DrawLine(A0->GetPosition()+wxPoint(10,10),Decay->GetPosition()+wxPoint(10,10));
     Osc1DC->DrawLine(Sust->GetPosition()+wxPoint(10,10),Decay->GetPosition()+wxPoint(10,10));
     Osc1DC->DrawLine(Sust->GetPosition()+wxPoint(10,10),Rele->GetPosition()+wxPoint(10,10));
-    Osc1DC->DrawLine(wxPoint(w,h),Rele->GetPosition()+wxPoint(10,10));
-    Osc1DC->DrawLine(wxPoint(w,h),Rele->GetPosition()+wxPoint(10,10));
-    Osc1DC->SetPen(wxPen(*wxRED_PEN));
-    Osc1DC->DrawLine(wxPoint(playhead,h),wxPoint(playhead,0));
-    Osc1DC->SetPen(wxPen(*wxWHITE_PEN));
-    Osc1DC->DrawLine(wxPoint(prevplayhead,h),wxPoint(prevplayhead,0));
+    //Osc1DC->DrawLine(wxPoint(w-11,h-10),Rele->GetPosition()+wxPoint(10,10));
+    if (patch.playing) {
+        Osc1DC->SetPen(wxPen(*wxWHITE_PEN));
+        Osc1DC->DrawLine(wxPoint(prevplayhead,h-11),wxPoint(prevplayhead,11));
+        Osc1DC->SetPen(wxPen(*wxBLUE_PEN));
+        Osc1DC->DrawLine(wxPoint(playhead,h-11),wxPoint(playhead,11));
+    }
+    attax = A0->GetPosition().x;
+    decayx = Decay->GetPosition().x;
+    sustx = Sust->GetPosition().x;
+    relex = Rele->GetPosition().x;
 }
 
 void wxSoundIDEFrame::OnCloseWindow(wxCloseEvent& event)

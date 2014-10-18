@@ -8,7 +8,8 @@
 		<object class="wxPanel" name="ID_PANEL1" variable="Panel1" member="yes">
 			<pos>144,80</pos>
 			<size>632,152</size>
-			<style>wxSIMPLE_BORDER|wxTAB_TRAVERSAL</style>
+			<fg>wxSYS_COLOUR_MENU</fg>
+			<style>0</style>
 			<handler function="OnPanel1Paint1" entry="EVT_PAINT" />
 			<object class="wxButton" name="ID_BUTTON3" subclass="MovableButton" variable="Decay" member="yes">
 				<label>D</label>

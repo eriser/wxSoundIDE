@@ -28,6 +28,8 @@
 
 extern wxPoint A0Pos;
 extern uint16_t scopew;
+extern int16_t attax, decayx, sustx, relex;
+
 
 class MovableButton : public wxButton
     {
@@ -70,6 +72,7 @@ class MovableButton : public wxButton
             this->Move(wxPoint(w*(float)pos/scopew, h0-(float)val/255*h0));
         }
 
+
         void onMouseDown(wxMouseEvent& evt)
         {
             CaptureMouse();
@@ -93,7 +96,28 @@ class MovableButton : public wxButton
                 wxPoint mouseOnScreen = wxGetMousePosition();
                 int newx = mouseOnScreen.x - x;
                 int newy = mouseOnScreen.y - y;
-                this->Move( parent->ScreenToClient( wxPoint(newx, newy) ) );
+                wxPoint newpoint = parent->ScreenToClient( wxPoint(newx, newy) );
+                if (newpoint.x < 0) newpoint.x = 0;
+                if (newpoint.y < 0) newpoint.y = 0;
+                if (newpoint.x > parent->GetSize().GetWidth()-20) newpoint.x = parent->GetSize().GetWidth()-20;
+                if (newpoint.y > parent->GetSize().GetHeight()-20) newpoint.y = parent->GetSize().GetHeight()-20;
+
+                // Check for ADSR rules
+                if (this->GetLabel()=="R") newpoint.y = parent->GetSize().GetHeight()-20;
+                if (this->GetLabel()=="A") newpoint.y = 0;
+                if (this->GetLabel()=="A" && newpoint.x > decayx) newpoint.x = decayx;
+                if (this->GetLabel()=="D" && newpoint.x > sustx) newpoint.x = sustx;
+                if (this->GetLabel()=="D" && newpoint.x < attax) newpoint.x = attax;
+                if (this->GetLabel()=="S" && newpoint.x > relex) newpoint.x = relex;
+                if (this->GetLabel()=="S" && newpoint.x < decayx) newpoint.x = decayx;
+                if (this->GetLabel()=="R" && newpoint.x < sustx) newpoint.x = sustx;
+
+                if (this->GetLabel()=="A") attax = newpoint.x;
+                if (this->GetLabel()=="D") decayx = newpoint.x;
+                if (this->GetLabel()=="S") sustx = newpoint.x;
+                if (this->GetLabel()=="R") relex = newpoint.x;
+
+                this->Move(newpoint);
                 temp = (wxClientDC *) parent->FindWindow(s);
                 if (temp) temp->DrawText(wxT("Hello World !!!"),20,10);
             }
