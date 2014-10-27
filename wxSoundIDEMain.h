@@ -29,6 +29,7 @@
 extern wxPoint A0Pos;
 extern uint16_t scopew;
 extern int16_t attax, decayx, sustx, relex;
+extern uint8_t updateadsr;
 
 
 class MovableButton : public wxButton
@@ -91,8 +92,6 @@ class MovableButton : public wxButton
         {
             if(dragging)
             {
-                wxClientDC* temp;
-                wxString s = "Osc1DC";
                 wxPoint mouseOnScreen = wxGetMousePosition();
                 int newx = mouseOnScreen.x - x;
                 int newy = mouseOnScreen.y - y;
@@ -118,8 +117,7 @@ class MovableButton : public wxButton
                 if (this->GetLabel()=="R") relex = newpoint.x;
 
                 this->Move(newpoint);
-                temp = (wxClientDC *) parent->FindWindow(s);
-                if (temp) temp->DrawText(wxT("Hello World !!!"),20,10);
+                updateadsr = true;
             }
         }
 
@@ -135,6 +133,8 @@ class wxSoundIDEFrame: public wxFrame
         wxSoundIDEFrame(wxWindow* parent,wxWindowID id = -1);
         virtual ~wxSoundIDEFrame();
         void UpdateScope();
+        void UpdateADSR();
+        void UpdatePitchEnv();
 
 
     private:
@@ -157,10 +157,13 @@ class wxSoundIDEFrame: public wxFrame
         void OnCloseWindow(wxCloseEvent& event);
         void OnADSRCheckBoxClick(wxCommandEvent& event);
         void OnOutputFileClick(wxCommandEvent& event);
+        void OnPitchCheckBoxClick(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(wxSoundIDEFrame)
         static const long ID_BUTTON3;
+        static const long ID_BUTTON11;
+        static const long ID_BUTTON9;
         static const long ID_BUTTON5;
         static const long ID_BUTTON4;
         static const long ID_BUTTON1;
@@ -193,6 +196,7 @@ class wxSoundIDEFrame: public wxFrame
         //(*Declarations(wxSoundIDEFrame)
         MovableButton* Rele;
         wxPanel* Osc1BtnPanel;
+        MovableButton* P2;
         MovableButton* Sust;
         wxButton* OutputFile;
         MovableButton* A0;
@@ -201,6 +205,7 @@ class wxSoundIDEFrame: public wxFrame
         wxSlider* PitchSlider1;
         wxCheckBox* PitchCheckBox;
         wxStaticText* PitchLabel1;
+        MovableButton* P1;
         wxStaticText* LengthLabel;
         wxPanel* Panel1;
         wxButton* Loop;

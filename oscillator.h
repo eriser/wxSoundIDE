@@ -24,6 +24,8 @@ typedef uint8_t boolean;
 struct ADSR
 {
   boolean on;
+  uint16_t level;
+  int16_t increment;
   uint16_t Apos;
   uint16_t Dpos;
   uint16_t Spos;
@@ -36,6 +38,19 @@ struct ADSR
   int16_t Dinc;
   int16_t Sinc;
   int16_t Rinc;
+};
+
+struct PITCHENV
+{
+  boolean on;
+  uint16_t level;
+  int16_t increment;
+  uint16_t P1pos;
+  uint16_t P2pos;
+  uint8_t P1val;
+  uint8_t P2val;
+  int16_t P1inc;
+  int16_t P2inc;
 };
 
 struct OSC {
@@ -53,6 +68,8 @@ struct OSC {
 
   ADSR adsr;
   int16_t adsrinc;
+
+  PITCHENV pitchenv;
 
   uint16_t samplepos;
   uint16_t samplelength;

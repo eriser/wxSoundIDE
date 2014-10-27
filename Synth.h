@@ -24,6 +24,7 @@ extern void playSound(uint8_t, uint16_t);
 extern void stopSound();
 extern void setOSC(OSC*,byte, byte,int,byte);
 extern void setADSR(OSC* o, ADSR adsr);
+extern void setPITCHENV(OSC* o, PITCHENV adsr);
 extern void output2file();
 extern void outputADSR(uint16_t);
 

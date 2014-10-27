@@ -74,17 +74,29 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
     /* Cast data passed through stream to our structure. */
     uint8_t *data = (uint8_t*)userData;
     uint8_t *out = (uint8_t*)outputBuffer;
-    unsigned int i;
+    unsigned int i, k=0;
     unsigned long j =0;
     (void) inputBuffer; /* Prevent unused variable warning. */
 
     /** create sound buffer by using the ISR **/
 
-
     //osc1.count = osc2.count = 0;
 
     for (j=0;j<framesPerBuffer;j+=PWMLEVELS) {
+
+                uint16_t tpitch = osc1.pitch;
+    // <math.h>
+    if (osc1.pitchenv.on && patch.count > osc1.pitchenv.P1pos && patch.count < osc1.pitchenv.P2pos)
+    {
+        if (k == 6) setOSC(&osc1,osc1.on,osc1.wave,osc1.pitchenv.level/127,255);
+        else k++;
+        if (k==7) k=0;
+    }
+
+    //osc1.pitch = tpitch;
+
             fakeISR(); /** create next sample **/
+
             if (!patch.playing) fakeOCR2B=0;
 
             /** Now create duty cycle **/
@@ -231,22 +243,59 @@ void fakeISR(){
   }
 
   if (osc1.adsr.on) {
-    if (patch.count > osc1.adsr.Rpos) osc1.adsrinc = 0;
-    else if (patch.count > osc1.adsr.Spos) osc1.adsrinc = osc1.adsr.Rinc;
-    else if (patch.count > osc1.adsr.Dpos) osc1.adsrinc = osc1.adsr.Sinc;
-    else if (patch.count > osc1.adsr.Apos) osc1.adsrinc = osc1.adsr.Dinc;
-    else osc1.adsrinc = osc1.adsr.Ainc;
-    if (osc1.vol > osc1.adsrinc && osc1.vol < 65536 - osc1.adsrinc) osc1.vol += osc1.adsrinc;
+    if (patch.count > osc1.adsr.Rpos-100) { osc1.adsr.increment = 0; osc1.adsr.level=0;}
+    else if (patch.count > osc1.adsr.Spos) osc1.adsr.increment = osc1.adsr.Rinc;
+    else if (patch.count > osc1.adsr.Dpos) osc1.adsr.increment = osc1.adsr.Sinc;
+    else if (patch.count > osc1.adsr.Apos) osc1.adsr.increment = osc1.adsr.Dinc;
+    else osc1.adsr.increment = osc1.adsr.Ainc;
+    if (osc1.adsr.increment > 0) {
+        if (osc1.adsr.level < 65536 - osc1.adsr.increment) osc1.adsr.level += osc1.adsr.increment;
+    } else if (osc1.adsr.level > osc1.adsr.increment) osc1.adsr.level += osc1.adsr.increment;
+    if (patch.count > osc1.adsr.Rpos-100) osc1.adsr.level=1;
   }
+
+    if (osc1.pitchenv.on) {
+        if (patch.count == osc1.pitchenv.P1pos) {
+            osc1.pitchenv.level=osc1.pitchenv.P1val;
+        }
+        if (patch.count > osc1.pitchenv.P1pos && patch.count < osc1.pitchenv.P2pos )
+        {
+            osc1.pitchenv.level += osc1.pitchenv.P1inc;
+        }
+
+    }
+
 
   //if (tick==7) {
     Farr[osc1.wave](&osc1);
     Farr[osc2.wave](&osc2);
 
     //fakeOCR2B = (osc1.output>>2)*(osc2.output>>2);
-    fakeOCR2B = osc1.output>>8; // To output, shift back to 8-bit
+
+    if (osc1.adsr.level) {
+      uint16_t temp;
+      temp = osc1.output >> 8;
+      temp *= (osc1.adsr.level >> 8);
+      fakeOCR2B = temp >> 8;
+    } else fakeOCR2B = osc1.output>>8; // To output, shift back to 8-bit
+
+
     tick = 0;
   //} else tick++;
+}
+
+void setPITCHENV(OSC* o, PITCHENV pitchenv){
+     o->pitchenv.on = pitchenv.on;
+     o->pitchenv.P1pos = pitchenv.P1pos;
+     o->pitchenv.P2pos = pitchenv.P2pos;
+     o->pitchenv.P1val = pitchenv.P1val;
+     o->pitchenv.P2val = pitchenv.P2val;
+     /*precalculate slopes*/
+     if (pitchenv.P1val > pitchenv.P2val) {
+        o->pitchenv.P1inc = -fastdiv((int16_t)(pitchenv.P1val-pitchenv.P2val)<<8, (pitchenv.P2pos-pitchenv.P1pos)+1);
+     } else {
+        o->pitchenv.P1inc = fastdiv((int16_t)(pitchenv.P2val-pitchenv.P1val)<<8, (pitchenv.P2pos-pitchenv.P1pos)+1);
+     }
 }
 
 void setADSR(OSC* o, ADSR adsr){
@@ -301,7 +350,7 @@ void setOSC(OSC* o,byte on, byte wave,int pitch,byte volume){
     break;
   }
 
-  o->output = 0;
+  //o->output = 0;
 }
 
 void output2file() {
